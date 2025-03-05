@@ -1,0 +1,118 @@
+#include "dune_radiological_model_decay0.fcl"
+#include "textfilegen.fcl"
+#include "larg4particlefilter.fcl"
+#include "prodsingle_iceberg.fcl"
+#include "tools_dune.fcl"
+
+
+services.TFileService.fileName: "text_hist.root"
+services.ChannelNoiseService:      @local::chnoiseold
+services.PedestalAdditionService:  @local::padprovided
+services.AdcDistortService:        @local::stuckbits
+services.AdcSuppressService:       @local::zsnone
+services.AdcCompressService:       @local::cmpreplace
+services.DetPedestalService:       @local::dune_fixedpeds
+services.SimChannelExtractService: @local::scxgeneric
+
+physics.producers.simwire:
+{
+         module_type: "SimWireDUNE"
+         SimChannelLabel: "largeant"
+         NoiseOn: true
+         PedestalOn: true
+         DistortOn: false
+         SuppressOn: false
+         KeepEmptyChannels: true
+         AdcSimulator:      "adcsim_ideal"
+      }
+
+physics.producers.absrunningsumtppass1: 
+{
+  module_type: "AbsRunningSumTPFinder"
+  InputTag:    "simwire"
+  finderCol: 
+  {
+    tool_type: "AbsRunningSumTPFinderPass1"
+    UseSignalKill: true        
+    SignalKillLookahead: false
+    SignalKillThreshold: 15
+    SignalKillNContig:   10
+  }
+  finderInd: 
+  {
+    tool_type: "AbsRunningSumTPFinderPass1"
+    UseSignalKill: false        
+    SignalKillLookahead: 6
+    SignalKillThreshold: 15
+    SignalKillNContig:   10
+  }
+}
+
+
+#physics.producers.trigprim: {
+
+  #module_type: "TriggerPrimitiveFinder"
+  #InputTag: "daq"
+  #finder: {
+    #tool_type: "TriggerPrimitiveFinderPass1"
+    #UseSignalKill: false
+    #SignalKillLookahead: 6
+    #SignalKillThreshold: 15
+    #SignalKillNContig: 1
+   #}
+
+#}
+
+
+standard_larg4particlefilter:
+{
+  module_type:                        "LArG4ParticleFilter"
+  module_label:                       "myfilter"
+  LArG4ModuleLabel:                   "largeant"
+  InterestingPDGs:                    [ 13., -13. ]
+  IsPrimary:                          [ -1, -1  ]
+  ParticleMinMomentum:                [ -1., -1. ]
+  ParticleMaxMomentum:                [ 0.4, 0.4 ]
+  StartInTPC:                         [ 0, 0 ]
+  StopInTPC:                          [ 1., 1. ]
+  ParticleMinTPCLength:               [ -1., -1. ]
+  RequireAllInterestingParticles:     false
+}
+
+
+physics.filters: {
+  f1: @local::standard_larg4particlefilter
+}
+
+physics.producers.largeant.VisualizeEvents: true
+
+physics.producers.Ar39GenInLAr: @local::dune10kt_39Ar_in_LAr
+
+physics.producers.generator:
+    {
+      module_type: "TextFileGen"
+      InputFileName: "/exp/dune/app/users/maira/dev/lar_dev/srcs/duneana/duneana/TrackingAna/cosmic_events.txt"
+      Offset: 0
+    }
+physics.simulate: [
+  "generator",
+  #"Ar39GenInLAr",
+  "largeant",
+  "f1",
+  "daq",
+  "rns",
+  "simwire"
+  #"absrunningsumtppass1"
+  ]
+
+physics.trigger_paths: [
+  "simulate"
+  ]
+
+outputs: {
+   out1: {
+      fileName: "stopped_muon_gentps.root"
+      module_type: "RootOutput"
+      SelectEvents: ["simulate"]
+   }
+}

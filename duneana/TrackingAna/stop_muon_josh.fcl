@@ -3,22 +3,6 @@
 #include "larg4particlefilter.fcl"
 #include "prodsingle_iceberg.fcl"
 
-services.TFileService.fileName: "text_hist.root"
-
-physics.producers.trigprim: {
-
-  module_type: "TriggerPrimitiveFinder"
-  InputTag: "daq"
-  finder: {
-    tool_type: "TriggerPrimitiveFinderPass1"
-    UseSignalKill: false
-    SignalKillLookahead: 6
-    SignalKillThreshold: 15
-    SignalKillNContig: 1
-   }
-
-}
-
 
 standard_larg4particlefilter:
 {
@@ -57,8 +41,6 @@ physics.simulate: [
   "f1",
   "daq",
   "rns",
-  #"simwire",
-  "trigprim"
   ]
 
 physics.trigger_paths: [
