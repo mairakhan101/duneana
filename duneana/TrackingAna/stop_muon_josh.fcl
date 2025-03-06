@@ -40,7 +40,7 @@ physics.simulate: [
   "largeant",
   "f1",
   "daq",
-  "rns",
+  "rns"
   ]
 
 physics.trigger_paths: [
