@@ -1,7 +1,7 @@
 TpAnalyzer : {
   module_type      : TpAnalyzer
   PrintDebug       : false
-  HitLabel         : "trigprim"
+  HitLabel         : "absrunningsumtppass1"
   #GeantModuleLabel : "largeant"
   #Ar39MCTruthLabel : "Ar39GenInLAr"
 }

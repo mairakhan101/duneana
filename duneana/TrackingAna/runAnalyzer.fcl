@@ -1,0 +1,26 @@
+#include "TpAnalyzer.fcl"
+
+process_name : getHits
+
+services : {
+   # @table::services
+}
+
+source : { module_type : RootInput }
+
+
+analyzers : {
+  TpAnalyzer : { @table::TpAnalyzer }
+}
+
+physics : {
+
+    analyzers  : { @table::analyzers }
+
+    end_p1 : [TpAnalyzer]
+
+    end_paths : [ end_p1]
+}
+
+services.TFileService.fileName : "hit_hist_stopped_muons.root"
+#services.Geometry : @local::dune10kt_1x2x2_v4_refactored_geo

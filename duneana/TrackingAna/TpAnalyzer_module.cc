@@ -9,7 +9,6 @@
 // ROOT includes
 #include "TTree.h"
 #include "TH1F.h"
-//#include "TFile.h"
 
 // Framework includes
 #include "art/Framework/Core/EDAnalyzer.h"
@@ -58,12 +57,21 @@ public:
   // custom functions
   void InitHistograms(art::ServiceHandle<art::TFileService> tfs);
   void FillHitHistograms(const recob::Hit* hit);
+  void FillTTree(const recob::Hit* hit, int eventNumber);
 
 private:
 
   // fcl params
   bool        fPrintDebug; // Consider printing debug info
   std::string fHitLabel; // Label for recob::Hit data product
+  
+  //TTree fill info 
+  TTree* fTree;
+  int    fHitEventNumber;
+  int    fHitChannel;
+  float  fHitPeakAmplitude;
+  float  fHitStartTick; 
+  float  fHitEndTick; 
 
   // hit level histograms
   TH1F* fChannel;
@@ -94,6 +102,14 @@ TpAnalyzer::TpAnalyzer(fhicl::ParameterSet const& pset)
     fPrintDebug        (pset.get<bool>("PrintDebug")               ),
     fHitLabel          (pset.get<std::string>("HitLabel")          )
 {
+
+    fTree = new TTree("hitTree", "Tree of Hit Data");
+    fTree->Branch("eventNumber", &fHitEventNumber, "eventNumber/I");
+    fTree->Branch("channel", &fHitChannel, "channel/I");
+    fTree->Branch("peakAmplitude", &fHitPeakAmplitude, "peakAmplitude/F");
+    fTree->Branch("startTick", &fHitStartTick, "startTick/F");
+    fTree->Branch("endTick", &fHitEndTick, "endTick/F");
+
 }
 
 
@@ -115,28 +131,32 @@ void TpAnalyzer::endJob()
 //......................................................
 void TpAnalyzer::analyze(art::Event const & evt)
 {
- 
+
+    int evtNum = evt.id().event();
+
     // read in recob hits
     std::vector<art::Ptr<recob::Hit>> hitList;
     auto hitListHandle = evt.getHandle<std::vector<recob::Hit>>(fHitLabel);
     if (hitListHandle) { art::fill_ptr_vector(hitList, hitListHandle); }
     size_t nHits = hitList.size();
+    //std::cout << nHits << std::endl;
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     // ---------------------------------------------------------------------------------------
     ///////////////////////////////////////////////////////////////////////////////////////////
 
-    // fill hit histograms
+    // fill hit histograms & TTree including event number
     for (size_t i =0; i<nHits; i++) {
       const recob::Hit* hit = hitList.at(i).get();
       FillHitHistograms(hit);
+      FillTTree(hit,evtNum);
       if (fPrintDebug == true) {
 	int cryoNum = hit->WireID().Cryostat;
 	int tpcNum  = hit->WireID().TPC;
 	int planeNum = hit->WireID().Plane;
 	int wireNum = hit->WireID().Wire;
 	int channelNum = hit->Channel();
-	std::cout << "Cryo, TPC, Plane, Wire, Channel  = " << cryoNum << ", " << tpcNum << ", " << planeNum << ", " << wireNum << ", " << channelNum << std::endl;
+       std::cout << "Cryo, TPC, Plane, Wire, Channel  = " << cryoNum << ", " << tpcNum << ", " << planeNum << ", " << wireNum << ", " << channelNum << std::endl;
       }
     }
 
@@ -148,7 +168,7 @@ void TpAnalyzer::InitHistograms(art::ServiceHandle<art::TFileService> tfs) {
     // hit histograms
     fChannel = tfs->make<TH1F>("fChannel", "Channel number", 1280, 0, 1279);
     fStartTick = tfs->make<TH1F>("fStartTick", "Start Tick", 3050, 0.0, 6100.0);
-    fEndTick = tfs->make<TH1F>("fEndTick", "End Tick", 3050, 0.0, 6100.0);
+    fEndTick = tfs->make<TH1F>("fEndTick", "End Tick",30500, 0.0, 6100.0);
     fPeakTime = tfs->make<TH1F>("fPeakTime", "Peak Time", 3050, 0.0, 6100.0);
     fSigmaPeakTime = tfs->make<TH1F>("fSigmaPeakTime", "Sigma of Peak Time", 100, 0.0, 1.0);
     fRMS = tfs->make<TH1F>("fRMS", "RMS of Hit Shape", 150, 0.0, 150);
@@ -174,8 +194,30 @@ void TpAnalyzer::FillHitHistograms(const recob::Hit* hit) {
   fChannel->Fill(hit->Channel());
   fStartTick->Fill(hit->StartTick());
   fEndTick->Fill(hit->EndTick());
-  
+  fPeakTime->Fill(hit->PeakTime());
+  fSigmaPeakTime->Fill(hit->SigmaPeakTime());
+  fRMS->Fill(hit->RMS());
+  fPeakAmplitude->Fill(hit->PeakAmplitude());
+  fSigmaPeakAmplitude->Fill(hit->SigmaPeakAmplitude());
+  fROISummedADC->Fill(hit->ROISummedADC());
+  fHitSummedADC->Fill(hit->HitSummedADC());
+  fIntegral->Fill(hit->Integral());
+  fSigmaIntegral->Fill(hit->SigmaIntegral());
+  fMultiplicity->Fill(hit->Multiplicity());
+  fView->Fill(hit->View());
 
 }
+
+void TpAnalyzer::FillTTree(const recob::Hit* hit, int eventNumber) {
+
+  fHitEventNumber = eventNumber;
+  fHitChannel = hit->Channel();
+  fHitPeakAmplitude = hit->PeakAmplitude();
+  fHitStartTick = hit->StartTick(); 
+  fHitEndTick = hit->EndTick(); 
+  fTree->Fill();
+
+}
+
 
 DEFINE_ART_MODULE(TpAnalyzer)
