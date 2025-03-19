@@ -23,7 +23,7 @@ std::vector<float> xVal, yVal, zVal, aVal, bVal, cVal;
 
 void readChannelMap() {
     // Get the file
-    TString fileName = "icebergwiredump_v2.txt";
+    TString fileName = "./icebergwiredump_v2.txt";
     std::ifstream inputFile(fileName.Data());
     
     if (!inputFile.is_open()) {
