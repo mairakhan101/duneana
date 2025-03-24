@@ -33,10 +33,10 @@ physics.producers.absrunningsumtppass1:
   finderCol: 
   {
     tool_type: "AbsRunningSumTPFinderPass1"
-    Threshold: 0
+    Threshold: 5
     UseSignalKill: false       
     SignalKillLookahead: 6
-    SignalKillThreshold: 15
+    SignalKillThreshold: 10
     SignalKillNContig:   10
   }
   finderInd: 
@@ -45,7 +45,7 @@ physics.producers.absrunningsumtppass1:
     Threshold: 5
     UseSignalKill: false        
     SignalKillLookahead: 6
-    SignalKillThreshold: 15
+    SignalKillThreshold: 10
     SignalKillNContig:   10
   }
 }
@@ -100,8 +100,8 @@ physics.simulate: [
   "generator",
   #"Ar39GenInLAr",
   "largeant",
-  "f1",
-  "daq",
+  #"f1",
+  #"daq",
   "rns",
   "simwire",
   "absrunningsumtppass1"
