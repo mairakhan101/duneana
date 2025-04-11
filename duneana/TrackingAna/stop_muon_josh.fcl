@@ -1,4 +1,4 @@
-#include "dune_radiological_model_decay0.fcl"
+#Include "dune_radiological_model_decay0.fcl"
 #include "textfilegen.fcl"
 #include "larg4particlefilter.fcl"
 #include "prodsingle_iceberg.fcl"
@@ -37,9 +37,9 @@ physics.simulate: [
   "generator",
   #"Ar39GenInLAr",
   "largeant",
-  "f1",                // this filters out events which ends up as "failed" events at the end
-  "daq",
-  "rns"
+  "f1"                // this filters out events which ends up as "failed" events at the end
+  #"daq",
+  #"rns"
   ]
 
 physics.trigger_paths: [

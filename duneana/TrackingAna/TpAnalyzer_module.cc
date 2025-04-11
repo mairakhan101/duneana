@@ -69,9 +69,11 @@ private:
   TTree* fTree;
   int    fHitEventNumber;
   int    fHitChannel;
+  float  fHitIntegral ;
   float  fHitPeakAmplitude;
   float  fHitStartTick; 
   float  fHitEndTick; 
+
 
   // hit level histograms
   TH1F* fChannel;
@@ -105,10 +107,12 @@ TpAnalyzer::TpAnalyzer(fhicl::ParameterSet const& pset)
 
     fTree = new TTree("hitTree", "Tree of Hit Data");
     fTree->Branch("eventNumber", &fHitEventNumber, "eventNumber/I");
+    fTree->Branch("integral", &fHitIntegral, "integral/F");
     fTree->Branch("channel", &fHitChannel, "channel/I");
     fTree->Branch("peakAmplitude", &fHitPeakAmplitude, "peakAmplitude/F");
     fTree->Branch("startTick", &fHitStartTick, "startTick/F");
     fTree->Branch("endTick", &fHitEndTick, "endTick/F");
+  
 
 }
 
@@ -210,8 +214,11 @@ void TpAnalyzer::FillHitHistograms(const recob::Hit* hit) {
 
 void TpAnalyzer::FillTTree(const recob::Hit* hit, int eventNumber) {
 
+  // Generating Hits that are compatible with Daisy's module. 
+
   fHitEventNumber = eventNumber;
   fHitChannel = hit->Channel();
+  fHitIntegral = hit->Integral();
   fHitPeakAmplitude = hit->PeakAmplitude();
   fHitStartTick = hit->StartTick(); 
   fHitEndTick = hit->EndTick(); 
