@@ -33,7 +33,7 @@ physics.producers.absrunningsumtppass1:
   finderCol: 
   {
     tool_type: "AbsRunningSumTPFinderPass1"
-    Threshold: 0
+    Threshold: 5
     UseSignalKill: false       
     SignalKillLookahead: 6
     SignalKillThreshold: 15
