@@ -181,42 +181,42 @@ void plotHits(){
         }
 
         if(drawPlot==1){ // Draw the plot
-//            if(this_eventNum!=185) continue; //IF YOU ONLY WANT TO PLOT ONE OF THEM
+            if(this_eventNum!=185) continue; //IF YOU ONLY WANT TO PLOT ONE OF THEM
             // make the TCanvas to put the plots on
             TCanvas *canvas = new TCanvas("canvas", Form("Event %d Plane Histograms",this_eventNum), 1200, 800);
             canvas->Divide(2, 3);  // Divide the canvas into 2x2 for multiple histograms
             canvas->cd(1);
             hist_u_tpc0->SetStats(0);
-            hist_u_tpc0->GetXaxis()->SetTitle("Time Tick");
-            hist_u_tpc0->GetYaxis("Channel Number");
+//            hist_u_tpc0->GetXaxis()->SetTitle("Time Tick");
+//            hist_u_tpc0->GetYaxis("Channel Number");
             hist_u_tpc0->Draw("COLZ"); // draw U plane
             canvas->cd(2);
             hist_u_tpc1->SetStats(0);
-            hist_u_tpc1->GetXaxis()->SetTitle("Time Tick");
-            hist_u_tpc1->GetYaxis("Channel Number");
+//            hist_u_tpc1->GetXaxis()->SetTitle("Time Tick");
+//            hist_u_tpc1->GetYaxis("Channel Number");
             hist_u_tpc1->Draw("COLZ"); // draw U plane
             canvas->cd(3);
             hist_v_tpc0->SetStats(0);
-            hist_v_tpc0->GetXaxis()->SetTitle("Time Tick");
-            hist_v_tpc0->GetYaxis("Channel Number");
+//            hist_v_tpc0->GetXaxis()->SetTitle("Time Tick");
+//            hist_v_tpc0->GetYaxis("Channel Number");
             hist_v_tpc0->Draw("COLZ"); // draw V plane
             canvas->cd(4);
             hist_v_tpc1->SetStats(0);
-            hist_v_tpc1->GetXaxis()->SetTitle("Time Tick");
-            hist_v_tpc1->GetYaxis("Channel Number");
+//            hist_v_tpc1->GetXaxis()->SetTitle("Time Tick");
+//            hist_v_tpc1->GetYaxis("Channel Number");
             hist_v_tpc1->Draw("COLZ"); // draw V plane
             canvas->cd(5);
             hist_z_tpc0->SetStats(0);
-            hist_z_tpc0->GetXaxis()->SetTitle("Time Tick");
-            hist_z_tpc0->GetYaxis("Channel Number");
+//            hist_z_tpc0->GetXaxis()->SetTitle("Time Tick");
+//            hist_z_tpc0->GetYaxis("Channel Number");
             hist_z_tpc0->Draw("COLZ"); // draw Z plane
             canvas->cd(6);
             hist_z_tpc1->SetStats(0);
-            hist_z_tpc1->GetXaxis()->SetTitle("Time Tick");
-            hist_z_tpc1->GetYaxis("Channel Number");
+//            hist_z_tpc1->GetXaxis()->SetTitle("Time Tick");
+//            hist_z_tpc1->GetYaxis("Channel Number");
             hist_z_tpc1->Draw("COLZ"); // draw Z plane
             canvas->Update();
-            canvas->Print(Form("/exp/dune/app/users/odalager/area_v10/plots/hits/run1_event%d_planeHists.png",this_eventNum)); //CHANGE OUTPUT FILE NAMES HERE
+            canvas->Print(Form("/exp/dune/app/users/odalager/area_v10/plots/hits/run1_event%d_planeHists_checkagain.png",this_eventNum)); //CHANGE OUTPUT FILE NAMES HERE
         }
 
         drawPlot = -1;
