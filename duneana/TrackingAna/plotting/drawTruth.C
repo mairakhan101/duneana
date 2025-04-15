@@ -23,7 +23,7 @@ int main(int argc, char** argv){
 //  With CMakeLists.txt: update information to apply to this file
 //  Any time CMakeLists.txt is updated, need to: cmake .
 //  Any time this code gets changed, need to update the executable: make
-//  Then to run the executable: ./drawTruth <filename_example:/exp/dune/app/users/odalager/area_v10/stopped_muon_gtps_1.root>
+//  Then to run the executable: ./drawTruth <filename_example:/exp/dune/app/users/odalager/area_v10/stopped_muon_gentps_1.root>
 
 
   if(argc != 2) //checks that you gave it only one artROOT input file
@@ -49,9 +49,17 @@ int main(int argc, char** argv){
     }
     if(ievent>thisEvent) break;*/
 
+    double momentum[2][3];
+
+      for(int i=0; i<2; i++){
+        for(int i_dimension=0; i_dimension<3; i_dimension++){
+          momentum[i][i_dimension]=0;
+        }
+      }
+
     TCanvas* c1 = new TCanvas("c1","multigraph L3",200,10,700,500);
 
-    TH3F *h = new TH3F("h", "3D Axes", 10, -5000, 5000, 10, -5000, 5000, 10, -5000, 5000);
+    TH3F *h = new TH3F("h", "MCParticle Truth", 10, -30, 30, 10, -50, 50, 10, -50, 50);
     h->SetStats(0);  // Hide the stats box
     h->GetXaxis()->SetTitle("x");
     h->GetYaxis()->SetTitle("y");
@@ -63,7 +71,13 @@ int main(int argc, char** argv){
     {
       // do stuff.
       //temp: cout values
-      std::cout << "Particle " << p.Mother() << "\t" << p.PdgCode() << "\tStart position: " << p.Vx() << ", " << p.Vy() << ", " << p.Vz() << "\tEnd position: " << p.EndX() << ", " << p.EndY() << ", " << p.EndZ() << std::endl; //get other variables like StartTick, Channel, PeakTime, RMS, PeakAmplitude
+      std::cout << "Particle " << p.Mother() << "\t" << p.PdgCode() << "\tMomentum: " << p.Px() << ", " << p.Py() << ", " << p.Pz() << std::endl; //get other variables like StartTick, Channel, PeakTime, RMS, PeakAmplitude
+
+      if(p.Mother() > 1) continue;
+      momentum[p.Mother()][0] += p.Px();
+      momentum[p.Mother()][1] += p.Py();
+      momentum[p.Mother()][2] += p.Pz();
+
 
       //Make a line for each of the particles
         // Create a TPolyLine3D object
@@ -108,7 +122,9 @@ int main(int argc, char** argv){
 
     }
     
-    c1->Print(Form("./plots/truth/truth_event%d.png",ievent));
+    cout << "Check Momentum Conservation!! x: " << momentum[1][0]-momentum[0][0] << "\t y: " << momentum[1][1]-momentum[0][1] << "\t z: " <<  momentum[1][2]-momentum[0][2] << endl;
+
+    c1->Print(Form("/exp/dune/app/users/odalager/area_v10/plots/truth/truth_event%d.png",ievent));
     ievent++;
   }
 
